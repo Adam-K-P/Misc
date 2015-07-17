@@ -1,0 +1,59 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+L	List.h	/^void delete(List L);$/;"	v
+List	List.h	/^struct List {$/;"	s
+List	List.h	/^typedef struct List *List;$/;"	t	typeref:struct:List
+MAX_LENGTH	Lex.c	11;"	d	file:
+__LIST	List.h	5;"	d
+append	List.c	/^void append(List L, int data) { $/;"	f
+back	List.c	/^int back(List L) { $/;"	f
+back	List.h	/^   struct node *back;$/;"	m	struct:List	typeref:struct:List::node
+clear	List.c	/^void clear(List L) { $/;"	f
+concatList	List.c	/^List concatList(List A, List B) {$/;"	f
+copyList	List.c	/^List copyList(List L) {$/;"	f
+cursor	List.h	/^   struct node *cursor;$/;"	m	struct:List	typeref:struct:List::node
+data	List.c	/^   int data;$/;"	m	struct:node	file:
+delete	List.c	/^void delete(List L) {$/;"	f
+deleteBack	List.c	/^void deleteBack(List L) {$/;"	f
+deleteFront	List.c	/^void deleteFront(List L) {$/;"	f
+equals	List.c	/^int equals(List A, List B) {  $/;"	f
+error	List.c	/^static void error(char *function, char *message) {$/;"	f	file:
+file_info	Lex.c	/^typedef struct file_info {$/;"	s	file:
+file_info	Lex.c	/^} file_info;$/;"	t	typeref:struct:file_info	file:
+freeList	List.c	/^void freeList(List *pL){$/;"	f
+front	List.c	/^int front(List L) { $/;"	f
+front	List.h	/^   struct node *front;$/;"	m	struct:List	typeref:struct:List::node
+get	List.c	/^int get(List L) { $/;"	f
+in_list	Lex.c	/^bool in_list (int ind, List list) {$/;"	f
+index	List.c	/^int index(List L) {$/;"	f
+index	List.h	/^   int index;$/;"	m	struct:List
+insertAfter	List.c	/^void insertAfter(List L, int data) {$/;"	f
+insertBefore	List.c	/^void insertBefore(List L, int data) {$/;"	f
+insert_file	Lex.c	/^file_info insert_file (FILE *infile, char **line_array, size_t nr_lines) {$/;"	f
+length	List.c	/^int length(List L){ $/;"	f
+length	List.h	/^   int length;$/;"	m	struct:List
+line_array	Lex.c	/^   char **line_array;$/;"	m	struct:file_info	file:
+main	Lex.c	/^int main (int argc, char **argv) {$/;"	f
+main	ListClient.c	/^int main(int argc, char* argv[]){$/;"	f
+moveBack	List.c	/^void moveBack(List L) {$/;"	f
+moveFront	List.c	/^void moveFront(List L) { $/;"	f
+moveNext	List.c	/^void moveNext(List L) {$/;"	f
+movePrev	List.c	/^void movePrev(List L) { $/;"	f
+newList	List.c	/^List newList(void) {$/;"	f
+newNode	List.c	/^node *newNode(void) {$/;"	f
+next	List.c	/^   struct node *next;$/;"	m	struct:node	typeref:struct:node::node	file:
+node	List.c	/^typedef struct node {$/;"	s	file:
+node	List.c	/^} node;$/;"	t	typeref:struct:node	file:
+nr_lines	Lex.c	/^   size_t nr_lines;$/;"	m	struct:file_info	file:
+prepend	List.c	/^void prepend(List L, int data) { $/;"	f
+prev	List.c	/^   struct node *prev;$/;"	m	struct:node	typeref:struct:node::node	file:
+printList	List.c	/^void printList(FILE *out, List L) {$/;"	f
+print_array	Lex.c	/^void print_array (List list, FILE *outfile, char **line_array) {$/;"	f
+sort_array	Lex.c	/^void sort_array (List list, file_info this_file) {$/;"	f
+std	Makefile	/^	gcc -c -std=c11 -Wall -Wextra -O3 -g Lex.c$/;"	m
+std	Makefile	/^	gcc -c -std=c11 -Wall -Wextra -O3 -g List.c$/;"	m
+std	Makefile	/^	gcc -c -std=c11 -Wall -Wextra -O3 -g ListClient.c$/;"	m

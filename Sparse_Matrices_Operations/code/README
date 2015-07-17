@@ -1,0 +1,22 @@
+/* Adam Pinarbasi
+   akpinarb
+   pa2           */
+
+List.h
+//provides prototypes for List functions
+
+List.c
+//implements the functions in List.h
+
+ListClient.c
+//A test for the List interface.
+
+Lex.c
+//Takes in an input file, sorts it into lexicographic order and produces
+  the sorted file as an output file
+
+makefile
+//makes the program
+
+README
+
