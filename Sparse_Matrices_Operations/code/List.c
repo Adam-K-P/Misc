@@ -1,3 +1,5 @@
+//TODO node->data may not be freed
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +12,7 @@ typedef struct node {
    void *data;
 } node;
 
-void error (char *function, char *message) {
+static void error (char *function, char *message) {
    fprintf(stderr, "Error in function %s: %s\n", function, message);
    exit(EXIT_FAILURE);
 }
@@ -35,6 +37,8 @@ node *newNode (void) {
 /* node destructor */
 void freeNode (node **dNode) {
    if (dNode != NULL && *dNode != NULL) {
+      free((*dNode)->data);
+      (*dNode)->data = NULL;
       free(*dNode);
       *dNode = NULL;
    }
@@ -56,11 +60,11 @@ void freeList (List *pL) {
 
 // length
 /* Get length */
-int length (List L) { return L->length; }
+inline int length (List L) { return L->length; }
 
 // index
 /* Get index */
-int index (List L) { return (L->cursor == NULL ? -1 : L->index); }
+inline int index (List L) { return (L->cursor == NULL ? -1 : L->index); }
 
 // front
 /* Get front element */
@@ -141,7 +145,8 @@ void moveNext (List L) {
 /* Prepend node to list */
 void prepend (List L, void *data) { 
    node *prep    = newNode(); 
-   prep->data    = data;
+   prep->data    = malloc(sizeof(void *));
+   prep->data    = memcpy(prep->data, (const void *)data, sizeof(void *));
    prep->next    = L->front;
    if (L->front == NULL) { L->front = prep; L->back = prep; }
    else { L->front->prev = prep; L->front = prep; }
@@ -152,7 +157,8 @@ void prepend (List L, void *data) {
 /* Append node to list */
 void append (List L, void *data) { 
    node *app     = newNode();
-   app->data     = data;
+   app->data     = malloc(sizeof(void *));
+   app->data     = memcpy(app->data, (const void *)data, sizeof(void *));
    app->prev     = L->back;
    if (L->front == NULL) { L->front = app; L->back = app; }
    else { L->back->next = app; L->back = app; }
@@ -164,7 +170,8 @@ void append (List L, void *data) {
 void insertBefore (List L, void *data) {
    if (L->cursor == NULL) error("insertBefore", "cursor is NULL");
    node *insb = newNode();
-   insb->data = data;
+   insb->data = malloc(sizeof(void *));
+   insb->data = memcpy(insb->data, (const void *)data, sizeof(void *));
    insb->next = L->cursor;
    insb->prev = L->cursor->prev;
    if (L->cursor->prev != NULL) L->cursor->prev->next = insb;
@@ -179,7 +186,8 @@ void insertBefore (List L, void *data) {
 void insertAfter (List L, void *data) {
    if (L->cursor == NULL) error("insertBefore", "cursor is NULL");
    node *insa = newNode();
-   insa->data = data;
+   insa->data = malloc(sizeof(void *));
+   insa->data = memcpy(insa->data, (const void *)data, sizeof(void *));
    insa->prev = L->cursor;
    insa->next = L->cursor->next;
    if (L->cursor->next != NULL) L->cursor->next->prev = insa;
