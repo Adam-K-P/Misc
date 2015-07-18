@@ -23,7 +23,6 @@ Matrix *add (Matrix *, Matrix *);
 Matrix *sub (Matrix *, Matrix *);
 Matrix *transpose (Matrix *);
 Matrix *mult (Matrix *, Matrix *);
-
 void print_matrix (Matrix *);
 
 #endif
