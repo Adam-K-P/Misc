@@ -64,6 +64,28 @@ static void full_append (List outer_list, int row, int column, double value) {
    append(outer_list, this_list, sizeof(struct List));
 }
 
+//helper function for change_entry
+//returns true if an Entry was inserted and false otherwise
+static bool determine_ins (Entry *this_entry, int row, int column, double value, 
+                           List outer_list, List inner_list) {
+   bool insert = false;
+   if (this_entry->row > row) {
+      List this_list = newList();
+      Entry *ins_entry = new_entry(row, column, value);
+      append(this_list, ins_entry, sizeof(Entry));
+      insertBefore(outer_list, this_list, sizeof(struct List));
+      insert = true;
+   }
+   if (this_entry->column > column) {
+      Entry *ins_entry = new_entry(row, column, value);
+      insertBefore(inner_list, ins_entry, sizeof(Entry));
+      insert = true;
+   }
+   if (this_entry->column == column)
+      { this_entry->value = value; insert = true; }
+   return insert;
+}
+
 void change_entry (Matrix *this_matrix, int row, int column, double value) {
    if (this_matrix == NULL) error("change_entry", "this_matrix is NULL");
    if (row > this_matrix->size || column > this_matrix->size) 
@@ -73,28 +95,18 @@ void change_entry (Matrix *this_matrix, int row, int column, double value) {
       { full_append(outer_list, row, column, value); return; }
    for (moveFront(outer_list); index(outer_list) >= 0; moveNext(outer_list)) {
       List inner_list = (List)get(outer_list);
+      bool insert = false;
       for (moveFront(inner_list); index(inner_list) >= 0;
            moveNext(inner_list)) {
          Entry *this_entry = (Entry *)get(inner_list);
          if (this_entry->row < row) break;
-         if (this_entry->row > row) {
-            List this_list = newList();
-            Entry *ins_entry = new_entry(row, column, value);
-            append(this_list, ins_entry, sizeof(Entry));
-            insertBefore(outer_list, this_list, sizeof(struct List));
-            return;
-         }
-         if (this_entry->column > column) {
-            Entry *ins_entry = new_entry(row, column, value);
-            insertBefore(inner_list, ins_entry, sizeof(Entry));
-            return;
-         }
-         //TODO delete entry if value is 0
-         if (this_entry->column == column) 
-            { this_entry->value = value; return; }
+         insert = determine_ins(this_entry, row, column, value, outer_list,
+                                                                inner_list);
       }
-      Entry *ins_entry = new_entry(row, column, value);
-      append(inner_list, ins_entry, sizeof(Entry));
+      if (!insert) {
+         Entry *ins_entry = new_entry(row, column, value);
+         append(inner_list, ins_entry, sizeof(Entry));
+      }
    }
 }
 
