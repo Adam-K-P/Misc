@@ -143,10 +143,10 @@ void moveNext (List L) {
 
 // prepend
 /* Prepend node to list */
-void prepend (List L, void *data) { 
+void prepend (List L, void *data, size_t size) { 
    node *prep    = newNode(); 
-   prep->data    = malloc(sizeof(void *));
-   prep->data    = memcpy(prep->data, (const void *)data, sizeof(void *));
+   prep->data    = malloc(size);
+   prep->data    = memcpy(prep->data, (const void *)data, size);
    prep->next    = L->front;
    if (L->front == NULL) { L->front = prep; L->back = prep; }
    else { L->front->prev = prep; L->front = prep; }
@@ -155,10 +155,10 @@ void prepend (List L, void *data) {
 
 // append
 /* Append node to list */
-void append (List L, void *data) { 
+void append (List L, void *data, size_t size) { 
    node *app     = newNode();
-   app->data     = malloc(sizeof(void *));
-   app->data     = memcpy(app->data, (const void *)data, sizeof(void *));
+   app->data     = malloc(size);
+   app->data     = memcpy(app->data, (const void *)data, size);
    app->prev     = L->back;
    if (L->front == NULL) { L->front = app; L->back = app; }
    else { L->back->next = app; L->back = app; }
@@ -167,11 +167,11 @@ void append (List L, void *data) {
 
 // insertBefore
 /* Insert node before cursor */
-void insertBefore (List L, void *data) {
+void insertBefore (List L, void *data, size_t size) {
    if (L->cursor == NULL) error("insertBefore", "cursor is NULL");
    node *insb = newNode();
-   insb->data = malloc(sizeof(void *));
-   insb->data = memcpy(insb->data, (const void *)data, sizeof(void *));
+   insb->data = malloc(size);
+   insb->data = memcpy(insb->data, (const void *)data, size);
    insb->next = L->cursor;
    insb->prev = L->cursor->prev;
    if (L->cursor->prev != NULL) L->cursor->prev->next = insb;
@@ -183,11 +183,11 @@ void insertBefore (List L, void *data) {
 
 // insertAfter
 /* Insert node after cursor */
-void insertAfter (List L, void *data) {
+void insertAfter (List L, void *data, size_t size) {
    if (L->cursor == NULL) error("insertBefore", "cursor is NULL");
    node *insa = newNode();
-   insa->data = malloc(sizeof(void *));
-   insa->data = memcpy(insa->data, (const void *)data, sizeof(void *));
+   insa->data = malloc(size);
+   insa->data = memcpy(insa->data, (const void *)data, size);
    insa->prev = L->cursor;
    insa->next = L->cursor->next;
    if (L->cursor->next != NULL) L->cursor->next->prev = insa;
@@ -241,18 +241,18 @@ void delete (List L) {
 
 // copyList
 /* Return a new copy of the list */
-List copyList (List L) {
+/*List copyList (List L) {
    List newL = newList();
    for (node *curr = L->front; curr != NULL; curr = curr->next)
       append(newL, curr->data);
    return newL;
-}
+}*/
 
 // concatList
 /* Concatenate List B onto List A */
-List concatList (List A, List B) {
+/*List concatList (List A, List B) {
    List cat = copyList(A);
    for (node *curr = B->front; curr != NULL; curr = curr->next)
       append(cat, curr->data);
    return cat;
-}
+}*/

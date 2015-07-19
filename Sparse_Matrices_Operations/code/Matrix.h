@@ -5,12 +5,12 @@
 #include "List.h"
 
 typedef struct Matrix {
-   int size;
+   double size;
    int entries;
    List row;
 } Matrix;
 
-Matrix *new_matrix (int);
+Matrix *new_matrix (double);
 void free_matrix (Matrix *);
 int get_size (Matrix *);
 int get_nnz (Matrix *);
