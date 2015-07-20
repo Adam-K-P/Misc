@@ -12,7 +12,7 @@ typedef struct Matrix {
 
 Matrix *new_matrix (double);
 void free_matrix (Matrix *);
-int get_size (Matrix *);
+double get_size (Matrix *);
 int get_nnz (Matrix *);
 bool matr_equals (Matrix *, Matrix *);
 void make_zero (Matrix *);
