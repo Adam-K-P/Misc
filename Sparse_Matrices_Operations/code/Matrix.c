@@ -54,14 +54,41 @@ inline int get_nnz (Matrix *this_matrix) {
    return this_matrix->entries;
 }
 
+void make_zero (Matrix *this_matrix) {
+   List outer_list = this_matrix->row;
+   for (moveFront(outer_list); index(outer_list) >= 0; moveNext(outer_list)) {
+      List inner_list = (List)get(outer_list);
+      clear(inner_list);
+   }
+   clear(outer_list);
+}
+
+Matrix *copy (Matrix *this_matrix) {
+   Matrix *copy = new_matrix(this_matrix->size);
+   List outer_list = this_matrix->row;
+   for (moveFront(outer_list); index(outer_list) >= 0; moveNext(outer_list)) {
+      List inner_list = (List)get(outer_list);
+      for (moveFront(inner_list); index(inner_list) >= 0;
+           moveNext(inner_list)) {
+         Entry *this_entry = (Entry *)get(inner_list);
+         change_entry(copy, this_entry->row, this_entry->column, 
+                                             this_entry->value);
+      }
+   }
+   return copy;
+}
+
 //helper function for change_entry
 //just creates a new list, appends an entry onto it
 //then appends that list onto the outer list
-static void full_append (List outer_list, int row, int column, double value) {
+static void full_append (Matrix *this_matrix, List outer_list,
+                         int row, int column, double value) {
+   if (value == 0) return;
    List this_list = newList();
    Entry *ins_entry = new_entry(row, column, value);
    append(this_list, ins_entry, sizeof(Entry));
    append(outer_list, this_list, sizeof(struct List));
+   ++this_matrix->entries;
 }
 
 //helper function for change_entry
@@ -92,22 +119,29 @@ void change_entry (Matrix *this_matrix, int row, int column, double value) {
       error("change_entry", "invalid entry");
    List outer_list = this_matrix->row;
    if (length(outer_list) == 0) 
-      { full_append(outer_list, row, column, value); return; }
+      { full_append(this_matrix, outer_list, row, column, value); return; }
    for (moveFront(outer_list); index(outer_list) >= 0; moveNext(outer_list)) {
       List inner_list = (List)get(outer_list);
-      bool insert = false;
+      bool this_row = false;
       for (moveFront(inner_list); index(inner_list) >= 0;
            moveNext(inner_list)) {
          Entry *this_entry = (Entry *)get(inner_list);
          if (this_entry->row < row) break;
-         insert = determine_ins(this_entry, row, column, value, outer_list,
-                                                                inner_list);
+         if (determine_ins(this_entry, row, column, value, outer_list,
+                                                           inner_list)) {
+            ++this_matrix->entries;
+            return;
+         }
+         if (this_entry->row == row) this_row = true;
       }
-      if (!insert) {
+      if (this_row && value != 0) { 
          Entry *ins_entry = new_entry(row, column, value);
          append(inner_list, ins_entry, sizeof(Entry));
+         ++this_matrix->entries;
+         return;
       }
    }
+   full_append(this_matrix, outer_list, row, column, value); 
 }
 
 Matrix *scalar_mult (Matrix *this_matrix, double scalar) {
@@ -183,8 +217,8 @@ Matrix *add (Matrix *this_matrix, Matrix *that_matrix) {
    if (get_size(this_matrix) != get_size(that_matrix))
       error("add", "matrices sizes are not equal");
    Matrix *add = new_matrix(this_matrix->size);
-   //if (this_matrix->entries == 0) return that_matrix;
-   //if (that_matrix->entries == 0) return this_matrix;
+   if (this_matrix->entries == 0) return that_matrix;
+   if (that_matrix->entries == 0) return this_matrix;
    List this_outer_list = this_matrix->row;
    List that_outer_list = that_matrix->row;
    for (moveFront(this_outer_list), moveFront(that_outer_list);
@@ -201,6 +235,11 @@ Matrix *add (Matrix *this_matrix, Matrix *that_matrix) {
       moveNext(that_outer_list);
    }
    return add;
+}
+
+Matrix *sub (Matrix *this_matrix, Matrix *that_matrix) {
+   Matrix *inv_matrix = scalar_mult(that_matrix, -1);
+   return add(this_matrix, inv_matrix);
 }
 
 Matrix *transpose (Matrix *this_matrix) {
@@ -266,10 +305,12 @@ void print_matrix (Matrix *this_matrix) {
       for (moveFront(inner_list); index(inner_list) >= 0; 
            moveNext(inner_list)) {
          Entry *this_entry = (Entry *)get(inner_list);
-         printf("row:%d\ncolumn:%d\nvalue:%f\n\n", 
-                 this_entry->row, this_entry->column, this_entry->value);
+         printf("(%d, %d, %f) ", this_entry->row, this_entry->column,
+                                                  this_entry->value);
       }
+      printf("\n");
    }
+   printf("\n");
 }
 
 
