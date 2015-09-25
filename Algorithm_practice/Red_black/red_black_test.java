@@ -11,10 +11,10 @@ class red_black_test {
       test.insert(10);
       test.insert(3);
 
-      /*test.delete(
+      test.delete(1);
       test.delete(3);
       test.delete(10);
-      test.delete(5);*/
+      test.delete(5);
 
       test.print();
    }

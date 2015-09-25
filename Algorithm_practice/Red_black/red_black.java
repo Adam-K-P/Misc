@@ -11,10 +11,15 @@ class red_black {
       node right;
       node left;
    }
-   node nil  = new node ();
+   node nil  = new node();
    node root = null;
 
    /* methods */
+
+   void setNil () {
+      nil.key   = Integer.MIN_VALUE;
+      nil.color = 0;
+   }
 
    //returns null if key not found
    node search (int key) {
@@ -85,6 +90,7 @@ class red_black {
 
    node btInsert (int key) {
       if (root == null) {
+         setNil(); //set nil fields
          node x   = new node();
          x.key    = key;
          x.color  = 0;
@@ -126,7 +132,7 @@ class red_black {
    }
 
    //precondition: element.right != nil
-   void left_rotate (node rooted) {
+   void leftRotate (node rooted) {
       node pivot = rooted.right;
       rooted.right = pivot.left;
       if (pivot.left != nil) 
@@ -143,7 +149,7 @@ class red_black {
    }
 
    //precondition: element.left != nil
-   void right_rotate (node rooted) {
+   void rightRotate (node rooted) {
       node pivot = rooted.left;
       rooted.left = pivot.right;
       if (pivot.right != nil) 
@@ -174,14 +180,14 @@ class red_black {
                                   inserted.parent.left)) {
             //case 2
             inserted = inserted.parent;
-            if (right) left_rotate(inserted);
-            else right_rotate(inserted);
+            if (right) leftRotate(inserted);
+            else rightRotate(inserted);
          }
          //case 3
          inserted.parent.color = 0;
          inserted.parent.parent.color = 1;
-         if (right) right_rotate(inserted.parent.parent);
-         else left_rotate(inserted.parent.parent);
+         if (right) rightRotate(inserted.parent.parent);
+         else leftRotate(inserted.parent.parent);
       }
    }
 
@@ -207,42 +213,117 @@ class red_black {
          thisNode.parent.right = thatNode;
       thatNode.parent = thisNode.parent;
    }
-
-   /*void delete_fixup (node thisNode) {
-      node thatNode = null;
-      while (thisNode != root && thisNode.color == 0) {
-         if (thisNode == thisNode.parent.left) {
+   
+   void altDelCases (node thisNode) {
+      if (thisNode == thisNode.parent.left) {
+         node thatNode = thisNode.parent.right;
+         if (thatNode.color == 1) {
+            thatNode.color = 0;
+            thisNode.parent.color = 1;
+            leftRotate(thisNode.parent);
             thatNode = thisNode.parent.right;
-            if (thatNode.color == 1) {
-               thatNode.color = 0;
-               thisNode.parent.color = 1;
-               left_rotate(thisNode.parent);
+         }
+         if (thatNode.left.color == 0 && thatNode.right.color == 0) {
+            thatNode.color = 1;
+            thisNode = thisNode.parent;
+         }
+         else {
+            if (thatNode.right.color == 0) {
+               thatNode.left.color = 0;
+               thatNode.color = 1;
+               rightRotate(thatNode);
                thatNode = thisNode.parent.right;
             }
-            if (thatNode.left.color == 0 && thatNode.right.color == 0) {
-               thatNode.color = 0;
-               thisNode = thisNode.parent;
-            }
-            else {
-               if (thatNode.right.color == 0) {
-                  thatNode.left.color = 0;
-                  thatNode.color = 1;
-                  right_rotate(thatNode);
-                  thatNode = thisNode.parent.right;
-               }
-               thatNode.color = thisNode.parent.color;
-               thisNode.parent.color = 0; 
-               thatNode.right.color = 0;
-               left_rotate(thisNode.parent);
-               thisNode = root;
-            }
+            thatNode.color = thisNode.parent.color;
+            thisNode.parent.color = 0;
+            thatNode.right.color  = 0;
+            leftRotate(thisNode.parent);
+            thisNode = root;
          }
-         else*/
+      }
+      else {
+         node thatNode = thisNode.parent.left;
+         if (thatNode.color == 1) {
+            thatNode.color = 0;
+            thisNode.parent.color = 1;
+            rightRotate(thisNode.parent);
+            thatNode = thisNode.parent.left;
+         }
+         if (thatNode.right.color == 0 && thatNode.left.color == 0) {
+            thatNode.color = 1;
+            thisNode = thisNode.parent;
+         }
+         else {
+            if (thatNode.left.color == 0) {
+               thatNode.right.color = 0;
+               thatNode.color = 1;
+               leftRotate(thatNode);
+               thatNode = thisNode.parent.left;
+            }
+            thatNode.color = thisNode.parent.color;
+            thisNode.parent.color = 0;
+            thatNode.left.color  = 0;
+            rightRotate(thisNode.parent);
+            thisNode = root;
+         }
+      }
+   }
+
+   void deleteCases (node thisNode, boolean right) {
+      node thatNode = right ? thisNode.parent.left : thisNode.parent.right;
+      if (thatNode.color == 1) {
+         thatNode.color = 0;
+         thatNode.parent.color = 1;
+         if (right) rightRotate(thisNode.parent);
+         else leftRotate(thisNode.parent);
+         thatNode = right ? thisNode.parent.left : thisNode.parent.right;
+      }
+      if (thatNode.left.color == 0 && thatNode.right.color == 0) {
+         thatNode.color = 0;
+         thisNode = thisNode.parent;
+      }
+      else {
+         if (right && thatNode.left.color == 0) {
+            thatNode.right.color = 0;
+            thatNode.color = 1;
+            leftRotate(thatNode);
+            thatNode = thisNode.parent.right;
+         }
+         else if (!right && thatNode.right.color == 0) {
+            thatNode.left.color = 0;
+            thatNode.color = 1;
+            rightRotate(thatNode);
+            thatNode = thisNode.parent.left;
+         }
+         thatNode.color = thisNode.parent.color;
+         thisNode.parent.color = 0;
+         if (right) { 
+            thatNode.left.color = 0;
+            rightRotate(thisNode.parent);
+         }
+         else {
+            thatNode.right.color = 0;
+            leftRotate(thisNode.parent);
+         }
+         thisNode = root;
+      }
+   }
+
+   void deleteFixup (node thisNode) {
+      while (thisNode != root && thisNode.color == 0) {
+         /*if (thisNode == thisNode.parent.left) 
+            deleteCases(thisNode, false);
+         else 
+            deleteCases(thisNode, true);*/
+         altDelCases(thisNode);
+      }
+      thisNode.color = 0;
+   }
 
    void delete (int key) {
       node del = search(key);
-      if (del == null) return;
-      node thisNode = del, thatNode;
+      if (del == null || del == nil) return;
+      node thisNode = del, thatNode = nil;
       int thisColor = thisNode.color;
 
       if (del.left == nil) {
@@ -254,9 +335,9 @@ class red_black {
          transplant(del, del.left);
       }
       else {
-         thisNode = minimum(del.right);
+         thisNode  = minimum(del.right);
          thisColor = thisNode.color;
-         thatNode = thisNode.right;
+         thatNode  = thisNode.right;
          if (thisNode.parent == del) 
             thatNode.parent = thisNode;
          else {
@@ -269,19 +350,20 @@ class red_black {
          thisNode.left.parent = thisNode;
          thisNode.color = del.color;
       }
-      if (thisColor == 0);
+      if (thisColor == 0)
+         deleteFixup(thatNode);
    }
 
    void print () {
-      print_element(root);
+      printElement(root);
       System.out.printf("root:%d\n", root.key);
    }
 
-   void print_element (node element) {
+   void printElement (node element) {
       if (element == nil) return;
-      print_element(element.left);
+      printElement(element.left);
       System.out.printf("%d\n%d\n\n", element.key, element.color);
-      print_element(element.right);
+      printElement(element.right);
    }
 }
 
