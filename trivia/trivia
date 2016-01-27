@@ -1,0 +1,67 @@
+#!/usr/bin/perl -w
+# trivia
+# simple trivia game script; add questions/answers
+
+use strict;
+use warnings;
+use Getopt::Std;
+
+my %opts;
+getopts "f", \%opts;  #might add options later
+
+sub get_question {
+   printf "Enter a question: ";
+   my $question = <STDIN>;
+   return $question;
+}
+
+sub get_answer {
+   printf "Enter the answer: ";
+   my $answer = <STDIN>;
+   return $answer;
+}
+
+sub enter_questions {
+   my %question_answers = ();
+   while (1) {
+      my $question = get_question ();
+      if ($question =~ /q/) { return %question_answers; }
+      my $answer = get_answer ();
+      $question_answers {$question} = $answer
+   }
+}
+
+sub check_answer {
+   my $answer = shift;
+   printf "Enter your answer: ";
+   my $user_answer = <STDIN>;
+   my $correct = 0;
+   if ($answer eq $user_answer) {
+      printf "Congratulations, you got it right!\n";
+      printf "So far you have gotten %d correct\n", ++$correct;
+   }
+   else { 
+      printf "Sorry, you missed it, try again\n";
+      check_answer $answer;
+   }
+}
+
+sub answer_questions {
+   my %question_answers = %{shift()};
+   keys %question_answers;
+   my $i = 1;
+   while (my ($question, $answer) = each %question_answers) {
+      printf "Question %d: %s", $i++, $question;
+      check_answer $answer;
+   }
+}
+
+sub main {
+   printf "\n\nWelcome to trivia!\n\n";
+   my %question_answers = enter_questions ();
+   printf "\n\nSee how many answers you can get correct!\n\n";
+   answer_questions \%question_answers;
+   printf "That's all the questions, thanks for playing!\n";
+}
+
+main ();

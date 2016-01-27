@@ -1,0 +1,8 @@
+trivia
+______
+
+
+Simple perl script for a trivia game.
+
+You first enter in questions and answers, then the user sees how many questions
+they can answer correctly.
