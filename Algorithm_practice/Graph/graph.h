@@ -17,8 +17,8 @@ class graph {
    public:
       graph () {
          neighbors = new std::unordered_map<T, std::unordered_set<T>*>;
-         parent = new std::unordered_map<T, T>;
-         level = new std::unordered_map<T, T>;
+         parent = new std::unordered_map<T, std::unordered_set<T>*>;
+         level = new std::unordered_map<T, int>;
       }
 
       ~graph () {
@@ -51,7 +51,6 @@ class graph {
       void bfs (T source) {
          level->emplace (source, 0);
          int i = 1;
-         for (auto it = neighbors->begin (); it != neighbors->end (); ++it)
       }
 
 };
