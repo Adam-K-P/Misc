@@ -13,7 +13,6 @@ int main () {
    this_graph->add_vertex (3);
    this_graph->add_vertex (4); 
    this_graph->add_vertex (5); 
-   this_graph->add_vertex (6); 
    this_graph->add_vertex (7); 
 
    this_graph->add_arc (1, 2);
@@ -22,7 +21,7 @@ int main () {
    this_graph->add_arc (3, 4);
    this_graph->add_arc (3, 5);
 
-   this_graph->bfs (1);
+   this_graph->dfs ();
    this_graph->print ();
    return EXIT_SUCCESS;
 }
