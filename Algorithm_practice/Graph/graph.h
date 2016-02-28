@@ -167,7 +167,7 @@ class graph {
             for (auto it = neighbors->at(tval)->begin ();
                       it != neighbors->at(tval)->end ();
                       ++it) {
-               std::cout << "ya I'm pretty bored lol" << endl;
+               std::cout << "ya I'm pretty bored lol" << std::endl;
             }
          }
       }
