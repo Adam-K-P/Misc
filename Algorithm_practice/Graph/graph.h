@@ -15,7 +15,6 @@ template<typename T>
 class graph {
 
    using adj = std::unordered_set<T>;
-   using tpair = std::pair<T, T>;
 
    private:
       /* T in all of these is the vertex and the second element in the 
@@ -23,9 +22,6 @@ class graph {
       std::unordered_map<T, adj*>* neighbors;
       std::unordered_map<T, T>* parent;
       std::unordered_map<T, int>* level;
-      std::unordered_map<T, int>* distance;
-      std::unordered_map<tpair*, int>* weight;
-      std::unordered_map<T, T>* predecessor;
 
       void dfs_visit (T source) {
          for (auto it = neighbors->at(source)->begin ();
@@ -38,45 +34,19 @@ class graph {
          }
       }
 
-      std::unordered_map<T, int>* init_weight () {
-         std::unordered_map<T, int>* weight = new std::unordered_map<T, int>;
-         for (auto it = neighbors->begin ();
-                   it != neighbors->end ();
-                   ++it) 
-            weight->emplace (it->first, INFINITY);
-         return weight;
-      }
-
-      void relax (T vertex, T vertex_, int wgt) {
-         (void) vertex;
-         (void) vertex_;
-         (void) wgt;
-      }
-
-      void dijkstra_loop
-            (std::priority_queue<T, std::vector<T>, std::greater<T>> vertices) {
-      }
-
    public:
       graph () {
          neighbors = new std::unordered_map<T, adj*>;
          parent = new std::unordered_map<T,T>;
          level = new std::unordered_map<T, int>;
-         distance = new std::unordered_map<T, int>;
-         weight = new std::unordered_map<tpair*, int>;
-         predecessor = new std::unordered_map<T, T>;
       }
 
       ~graph () {
          delete neighbors;
          delete parent;
          delete level;
-         delete distance;
-         delete weight;
-         delete predecessor;
       }
 
-      //maybe sort before printing?
       void print () {
          for (auto it = neighbors->begin (); it != neighbors->end (); ++it) {
             std::cout << "Vertex: " << it->first << std::endl;
@@ -97,23 +67,6 @@ class graph {
              neighbors->find (vertex_) != neighbors->end ()) {
             adj* neighbors_ = neighbors->at (vertex);
             neighbors_->insert (vertex_);
-         }
-         else {
-            std::cout << "Vertex: " << vertex << " and Vertex: " << vertex_ 
-                      << " are not in the graph; continuing with execution" 
-                      << std::endl;
-         }
-      }
-
-      //for adding weighted edges
-      void add_arc (T vertex, T vertex_, int wgt) {
-         if (neighbors->find (vertex) != neighbors->end () and
-             neighbors->find (vertex_) != neighbors->end ()) {
-            add_arc (vertex, vertex_);
-            tpair* this_pair = new tpair;
-            this_pair->first = vertex;
-            this_pair->second = vertex_;
-            weight->emplace (this_pair, wgt);
          }
          else {
             std::cout << "Vertex: " << vertex << " and Vertex: " << vertex_ 
@@ -151,27 +104,30 @@ class graph {
          }
       }
 
-      // Dijkstra's algorithm
-      void dijkstra (T source) {
-         std::unordered_map<T, int>* weight = init_weight ();
-         distance->emplace (source, 0);
-         std::priority_queue<T, std::vector<T>, std::greater<T>> vertices;
-         for (auto it = neighbors->begin ();
-                   it != neighbors->end ();
-                   ++it) 
-            vertices.push (it->first);
-         dijkstra_loop (vertices);
-         while (not vertices.empty ()) {
-            T tval = vertices.top ();
-            vertices.pop ();
-            for (auto it = neighbors->at(tval)->begin ();
-                      it != neighbors->at(tval)->end ();
-                      ++it) {
-               std::cout << "ya I'm pretty bored lol" << std::endl;
-            }
-         }
-      }
+};
 
+template<typename T>
+class directed_graph {
+
+   using adj = std::unordered_set<int>;
+
+   private:
+      //maps key to value (which is of type T)
+      std::unordered_map<int, T> vertex;
+      //maps key to distance associated with key
+      std::unordered_map<int, int> distance;
+      //maps (key, key) pair to weight of edge
+      std::unordered_map<std::pair<int, int>*, int> weight;
+      //maps key to adjacency list
+      std::unordered_map<int, adj> neighbors;
+
+   public:
+      directed_graph () { 
+         /*vertex = new std::unordered_map<int, T>;
+         distance = new std::unordered_map<int, int>;
+         weight = new std::unordered_map<std::pair<int, int>*, int>;
+         neighbors = new std::unordered_map<int, adj*>;*/
+      }
 };
 
 #endif
