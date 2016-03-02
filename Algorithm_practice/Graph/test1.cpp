@@ -3,6 +3,8 @@
 
 #include "graph.h"
 
+/* tests graph class */
+
 using namespace std;
 
 int main () {
