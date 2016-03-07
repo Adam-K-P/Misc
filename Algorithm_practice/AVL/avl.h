@@ -10,14 +10,19 @@ class avl {
 
       struct node {
 
-         const T& data;
-         std::shared_ptr<node> right;
-         std::shared_ptr<node> left;
+         using up_T = std::unique_ptr<T>;
+         using sp_node = std::shared_ptr<node>;
 
-         node (const T& data_) : data(data_) {
-            right = std::shared_ptr<node> (nullptr);
-            left = std::shared_ptr<node> (nullptr);
+         up_T data;
+         sp_node right;
+         sp_node left;
+
+         node (const T& data_) {
+            data = up_T (new T (data_));
+            right = sp_node (nullptr);
+            left = sp_node (nullptr);
          }
+
          ~node () {}
 
       };
@@ -26,23 +31,35 @@ class avl {
 
       sp_node root;
 
+      static bool handle_insert (sp_node& this_node, const T& data) {
+         if (this_node.get () == nullptr) {
+            this_node = sp_node (new node (data));
+            return true;
+         }
+         return false;
+      }
+
       void bst_insert (const T& data) {
-         if (root.get () == nullptr) {
-            std::cout << "root changed to " << data << std::endl;
-            root = sp_node (new node (data));
+         if (handle_insert (root, data))
             return;
-         }
-         sp_node curr = root;
-         while (curr.get () != nullptr) {
-            std::cout << "sanity check" << std::endl;
-            if (curr->data == data)
+
+         node* curr = root.get ();
+         while (curr != nullptr) {
+            if (*(curr->data) == data)
                return;
-            if (data < curr->data)
-               curr.swap (curr->left);
-            else 
-               curr.swap (curr->right);
+            if (data < *(curr->data)) {
+               if (handle_insert (curr->left, data))
+                  return;
+               else
+                  curr = curr->left.get ();
+            }
+            else {
+               if (handle_insert (curr->right, data))
+                  return;
+               else
+                  curr = curr->right.get ();
+            }
          }
-         //curr.reset (new node (data));
       }
 
       void bst_remove (const T& data) {
@@ -52,7 +69,7 @@ class avl {
       void print_ (sp_node this_node) const {
          if (this_node.get () == nullptr) return;
          print_ (this_node->left);
-         std::cout << this_node->data << std::endl;
+         std::cout << *(this_node->data) << std::endl;
          print_ (this_node->right);
       }
 
@@ -64,6 +81,8 @@ class avl {
       ~avl () {}
 
       void insert (const T& data) {
+         /*if (root.get() != nullptr) 
+            std::cout << "in insert, root is: " << root->data << std::endl;*/
          bst_insert (data);
       }
 
