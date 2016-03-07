@@ -8,22 +8,31 @@ class avl {
 
    private:
 
-      struct node {
+      class node {
 
-         using up_T = std::unique_ptr<T>;
-         using sp_node = std::shared_ptr<node>;
+         private:
 
-         up_T data;
-         sp_node right;
-         sp_node left;
+            using up_T = std::unique_ptr<T>;
+            using sp_node = std::shared_ptr<node>;
 
-         node (const T& data_) {
-            data = up_T (new T (data_));
-            right = sp_node (nullptr);
-            left = sp_node (nullptr);
-         }
+            up_T data;
 
-         ~node () {}
+         public:
+
+            sp_node right;
+            sp_node left;
+
+            node (const T& data_) {
+               data = up_T (new T (data_));
+               right = sp_node (nullptr);
+               left = sp_node (nullptr);
+            }
+
+            ~node () {}
+
+            const T& get_data () const {
+               return *data;
+            }
 
       };
 
@@ -45,9 +54,9 @@ class avl {
 
          node* curr = root.get ();
          while (curr != nullptr) {
-            if (*(curr->data) == data)
+            if (curr->get_data () == data)
                return;
-            if (data < *(curr->data)) {
+            if (data < curr->get_data ()) {
                if (handle_insert (curr->left, data))
                   return;
                else
@@ -69,7 +78,7 @@ class avl {
       void print_ (sp_node this_node) const {
          if (this_node.get () == nullptr) return;
          print_ (this_node->left);
-         std::cout << *(this_node->data) << std::endl;
+         std::cout << this_node->get_data () << std::endl;
          print_ (this_node->right);
       }
 
