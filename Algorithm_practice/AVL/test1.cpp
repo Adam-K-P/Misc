@@ -15,7 +15,7 @@ int main () {
    tree.insert (4);
    tree.insert (5);
 
-   tree.print ();
+   tree.test ();
 
    return EXIT_SUCCESS;
 }
