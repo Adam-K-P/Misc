@@ -23,6 +23,7 @@ class avl {
             sp_node right;
             sp_node left;
             sp_node parent;
+            int key;
 
             node (const T& data_) {
                data = up_T (new T (data_));
@@ -44,7 +45,33 @@ class avl {
       sp_node root;
       sp_node nil = sp_node (nullptr); //root's parent
 
+      static int height (const sp_node& this_node) {
+         if (this_node.get () == nullptr)
+            return 0;
+         int rheight = height (this_node->right);
+         int lheight = height (this_node->left);
+         return 1 + (rheight > lheight ? rheight : lheight);
+      }
+
+      //true -> violations
+      //the heights of the right and left subtree may differ by at most 1
+      bool check_violations (sp_node& this_node) {
+         int lheight = height (this_node->left);
+         int rheight = height (this_node->right);
+         if ( (lheight > rheight and lheight - rheight > 1) or
+              (rheight > lheight and rheight - lheight > 1))
+            return true;
+         return false;
+      }
+
       void cleanup (sp_node& this_node) {
+         if (this_node.get () == nullptr) 
+            return;
+         if (check_violations (this_node))
+            std::cout << "violation at: " << this_node->get_data ()
+                      << std::endl;
+         else
+            cleanup (this_node->parent);
       }
 
       //precondition: this_node must have a left child
@@ -76,7 +103,7 @@ class avl {
          return false;
       }
 
-      void bst_insert_ (const T& data) {
+      void bst_insert (const T& data) {
          if (handle_bst_insert (root, nil, data))
             return;
          sp_node curr = root;
@@ -131,7 +158,8 @@ class avl {
       void insert (const T& data) {
          /*if (root.get() != nullptr) 
             std::cout << "in insert, root is: " << root->data << std::endl;*/
-         bst_insert_ (data);
+         bst_insert (data);
+         cleanup (root);
       }
 
       void remove (const T& data) {
@@ -139,13 +167,16 @@ class avl {
       }
 
       void test () {
-         std::cout << "original structure\n";
+         std::cout << "original structure\nheight: " << height (root)
+                   << std::endl;
          print__ (root);
          left_rotate (root);
-         std::cout << "after left_rotate (root)\n";
+         std::cout << "after left_rotate (root)\nheight: " << height (root)
+                   << std::endl;
          print__ (root);
          right_rotate (root);
-         std::cout << "after right_rotate (root)\n";
+         std::cout << "after right_rotate (root)\nheight: " << height (root)
+                   << std::endl;
          print__ (root);
       }
 
