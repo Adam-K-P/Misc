@@ -3,6 +3,10 @@
 
 #include <cassert>
 #include <memory>
+#include <utility>
+
+constexpr bool right_heavy = true;
+constexpr bool left_heavy = false;
 
 template <typename T>
 class avl {
@@ -13,17 +17,18 @@ class avl {
 
          private:
 
-            using up_T = std::unique_ptr<T>;
+            using up_int = std::unique_ptr<const int>;
+            using up_T = std::unique_ptr<const T>;
             using sp_node = std::shared_ptr<node>;
 
             up_T data;
+            up_int key;
 
          public:
 
             sp_node right;
             sp_node left;
             sp_node parent;
-            int key;
 
             node (const T& data_) {
                data = up_T (new T (data_));
@@ -41,9 +46,11 @@ class avl {
       };
 
       using sp_node = std::shared_ptr<node>;
+      using p_bool = std::pair<bool, bool>;
+      using violation = std::unique_ptr<p_bool>;
 
       sp_node root;
-      sp_node nil = sp_node (nullptr); //root's parent
+      const sp_node nil = sp_node (nullptr); //root's parent
 
       static int height (const sp_node& this_node) {
          if (this_node.get () == nullptr)
@@ -55,21 +62,33 @@ class avl {
 
       //true -> violations
       //the heights of the right and left subtree may differ by at most 1
-      bool check_violations (sp_node& this_node) {
+      static violation check_violations (const sp_node& this_node) {
+         violation this_violation = violation (new p_bool);
          int lheight = height (this_node->left);
          int rheight = height (this_node->right);
-         if ( (lheight > rheight and lheight - rheight > 1) or
-              (rheight > lheight and rheight - lheight > 1))
-            return true;
-         return false;
+         if (lheight > rheight and lheight - rheight > 1) {
+            this_violation->first = true;
+            this_violation->second = left_heavy;
+         }
+         else if (rheight > lheight and rheight - lheight > 1) {
+            this_violation->first = true;
+            this_violation->second = right_heavy;
+         }
+         else {
+            this_violation->first = false;
+            this_violation->second = false; //doesn't matter
+         }
+         return this_violation;
       }
 
-      void cleanup (sp_node& this_node) {
+      static void cleanup (sp_node& this_node) {
          if (this_node.get () == nullptr) 
             return;
-         if (check_violations (this_node))
+         violation this_violation = check_violations (this_node);
+         if (this_violation->first) 
             std::cout << "violation at: " << this_node->get_data ()
-                      << std::endl;
+                      << (this_violation->second == right_heavy ?
+                          " right heavy" : " left heavy") << std::endl;
          else
             cleanup (this_node->parent);
       }
@@ -93,7 +112,7 @@ class avl {
       }
 
       static bool handle_bst_insert (sp_node& this_node, 
-                                     sp_node& parent,
+                                     const sp_node& parent,
                                      const T& data) {
          if (this_node.get () == nullptr) {
             this_node = sp_node (new node (data));
@@ -127,7 +146,7 @@ class avl {
       }
 
       //in-order traversal
-      void print_ (const sp_node& this_node) const {
+      static void print_ (const sp_node& this_node) {
          if (this_node.get () == nullptr) return;
          print_ (this_node->left);
          std::cout << this_node->get_data () << std::endl;
@@ -135,7 +154,7 @@ class avl {
       }
 
       //shows hierarchy of the tree as well
-      void print__ (const sp_node& this_node) const {
+      static void print__ (const sp_node& this_node) {
          if (this_node.get () == nullptr) return;
          print__ (this_node->left);
          std::cout << "data: " << this_node->get_data () << std::endl;
